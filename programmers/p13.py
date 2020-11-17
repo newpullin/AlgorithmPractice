@@ -26,17 +26,36 @@ def find_path_length(y, x, map, n):
         return map[y][x]
 
 def solution(n, edge):
-    map = [[-1 for i in range(n)] for k in range(n)]
+    map = [[-1 for i in range(n-k)] for k in range(1,n)]
     for e in sorted(edge, key=lambda vert: vert[0]):
-        map[e[0]-1][e[1]-1] = 1
-        map[e[1] - 1][e[0] - 1] = 1
-
-    for k in range(n):
-        map[k][k] = 0
+        f = min(e[0], e[1])
+        t = max(e[1], e[0])
+        map[f-1][t-f-1] = 1
     print(map)
-    for i in range(n):
-        print(find_path_length(0, i, map, n))
-    #print(map)
+
+    # max_length = n-1
+    # get legnth
+    for gl in range(2, n):
+        # 순환한다.
+        # 만약 경로값(a->b)이 찾고자 하는 길이(gl)보다 작고 -1 이 아니면
+        # 그 경로값으로 가서 현재 경로값(a->b) + 경로값(b->c) = gl 이 되는 지점이 있는지 확인하고
+        # (a->c) 를 gl로 변경하는데, (a->c)가 이미 gl보다 작은 값일 가능성도 있으니까 확인해보자
+        # 첫 줄에 -1이 없다면 모든 1에서 다른 vertex로 가는 최소 경로값을 찾은 것이므로 종료한다.
+        if not (-1 in map[0]):
+            break
+
+        for y in range(1, n):
+            for x in range(n-y):
+                now_len = map[y-1][x]
+                if now_len != -1 and now_len < gl:
+                    print(f"{y-1} {x+y}")
+                    for s in range(n - (x+y) -1):
+                        if now_len + map[x+y][s] == gl:
+                            map[y-1][x+y+s] = gl
+                            print(f"{now_len}, { y } => {x+y+1} => {x+y+s+2}")
+                    #print(map[y-1][x], end=' ')
+            print('')
+
     answer = 0
     return answer
 
