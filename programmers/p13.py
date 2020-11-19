@@ -11,54 +11,32 @@ n개의 노드가 있는 그래프가 있습니다. 각 노드는 1부터 n까�
 vertex 배열 각 행 [a, b]는 a번 노드와 b번 노드 사이에 간선이 있다는 의미입니다.
 """
 
-def find_path_length(y, x, map, n):
-    if map[y][x] == -1:
-        min_value = 100000000
-        # y -> x로 가는 길을 모르면 y -> t -> x 로 가는 길이 있는지 찾아본다.
-        for t in range(n):
-            if y == t or x == t:
-                continue
-            if map[y][t] != -1:
-                path = map[y][t] + find_path_length(y, x, map, n)
-
-        return "최소 경로를 찾는다."
-    else:
-        return map[y][x]
+import collections
 
 def solution(n, edge):
-    map = [[-1 for i in range(n-k)] for k in range(1,n)]
-    for e in sorted(edge, key=lambda vert: vert[0]):
-        f = min(e[0], e[1])
-        t = max(e[1], e[0])
-        map[f-1][t-f-1] = 1
-    print(map)
+    vec = [[] for _ in range(n)]
+    dis = [0 for _ in range(n)]
+    visited = [False] * n
 
-    # max_length = n-1
-    # get legnth
-    for gl in range(2, n):
-        # 순환한다.
-        # 만약 경로값(a->b)이 찾고자 하는 길이(gl)보다 작고 -1 이 아니면
-        # 그 경로값으로 가서 현재 경로값(a->b) + 경로값(b->c) = gl 이 되는 지점이 있는지 확인하고
-        # (a->c) 를 gl로 변경하는데, (a->c)가 이미 gl보다 작은 값일 가능성도 있으니까 확인해보자
-        # 첫 줄에 -1이 없다면 모든 1에서 다른 vertex로 가는 최소 경로값을 찾은 것이므로 종료한다.
-        if not (-1 in map[0]):
-            break
+    for e in edge:
+        vec[e[0]-1].append(e[1]-1)
+        vec[e[1]-1].append(e[0]-1)
 
-        for y in range(1, n):
-            for x in range(n-y):
-                now_len = map[y-1][x]
-                if now_len != -1 and now_len < gl:
-                    print(f"{y-1} {x+y}")
-                    for s in range(n - (x+y) -1):
-                        if now_len + map[x+y][s] == gl:
-                            map[y-1][x+y+s] = gl
-                            print(f"{now_len}, { y } => {x+y+1} => {x+y+s+2}")
-                    #print(map[y-1][x], end=' ')
-            print('')
+    que = collections.deque([0])
+    visited[0] = True
+    while len(que) != 0:
+        loop = len(que)
+        for i in range(loop):
+            poped = que.popleft()
+            for v in vec[poped]:
+                if not visited[v]:
+                    que.append(v)
+                    visited[v] = True
 
-    answer = 0
-    return answer
+    return loop
+
+
 
 vertex = [[3, 6], [4, 3], [3, 2], [1, 3], [1, 2], [2, 4], [5, 2]]
-solution(6, vertex)
+print(solution(6, vertex))
 
