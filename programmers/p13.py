@@ -15,7 +15,6 @@ import collections
 
 def solution(n, edge):
     vec = [[] for _ in range(n)]
-    dis = [0 for _ in range(n)]
     visited = [False] * n
 
     for e in edge:
