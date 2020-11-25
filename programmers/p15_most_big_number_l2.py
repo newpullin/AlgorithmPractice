@@ -12,13 +12,10 @@ numbers의 원소는 0 이상 1,000 이하입니다.
 정답이 너무 클 수 있으니 문자열로 바꾸어 return 합니다.
 """
 
-"""
-제출하고 보니까, 군더더기가 너무 많은 소스코드였다.
-"""
 
 def solution(numbers):
     num_to_str = list(map(str, numbers))
-    # 9 -> 9999 10 -> 1010 123 -> 1231 except 0
+    # 튜플로 만들어 인덱스와 만들어낸 값을 같이 저장할 필요 없이 정렬할 때  만들어낸 값을 기준으로 해버리면 훨씬 간단해진다.
     index_with_filled9 = [(index, int(s + (s*3)[0:(4 - len(s))])) for index, s in enumerate(num_to_str)]
     sorted_tuple = sorted(index_with_filled9, key=lambda x: x[1], reverse=True)
     answer = "".join([num_to_str[t[0]] for t in sorted_tuple])
