@@ -14,3 +14,53 @@ genres와 plays의 길이는 같으며, 이는 1 이상 10,000 이하입니다.
 장르에 속한 곡이 하나라면, 하나의 곡만 선택합니다.
 모든 장르는 재생된 횟수가 다릅니다.
 """
+
+# [classic, pop, classic, classic, pop]	[500, 600, 150, 800, 2500]	[4, 1, 3, 0]
+# 장르별로 더하면서
+# 장르끼리 묶으면서
+# 순서를 정한다?
+def solution(genres, plays):
+    answer = []
+
+    genres_count_dict = {}
+    genres_index_list_dict = {}
+    play_dict = {}
+    for i in range(len(genres)):
+        g = genres[i]
+        p = plays[i]
+
+        # Counting each genres with dictionary
+        genres_count_dict.setdefault(g, 0)
+        genres_count_dict[g] += p
+
+        # save index and plays into list in dict[genres]
+        genres_index_list_dict.setdefault(g, [])
+        genres_index_list_dict[g].append((i, p))
+
+
+    # sorting genres by total
+    sorted_genres = sorted(genres_count_dict.keys(), key=(lambda x: genres_count_dict[x]), reverse=True)
+
+    answer = []
+    # print(sorted_genres)
+    # append index ordered by genres
+    for key_v in sorted_genres:
+        target = genres_index_list_dict[key_v]
+        if len(target) == 1:
+            answer.append(target[0][0])
+            continue
+        # print(f"target : {target}")
+        sorted_target = sorted(target, key=(lambda x: x[1]), reverse=True)
+        # print(f"sorted target : {sorted_target}")
+        #answer.extend([x[0] for x in sorted_target[:2]])
+        answer.append(sorted_target[0][0])
+        answer.append(sorted_target[1][0])
+
+    return answer
+
+"""
+genres=[classic,classic,classic,classic,pop]
+plays=[500,150,800,800,2500]
+"""
+#print(solution(["classic","classic","classic","classic","pop"], [500,150,800,800,2500])) # 4 2 3
+print(solution(['A', 'A', 'B', 'A'], [5, 5, 6, 5])) # 0 1 2
