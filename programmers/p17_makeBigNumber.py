@@ -1,23 +1,37 @@
 def solution(number, k):
-    number = list(number)
-    
-    want_length = len(number) - k
-    # 9의 개수보다 구하고자 하는 문자열 길이가 짧은 경우 처리
-    # 이렇게 처리하는게 올바른건가?
-    nine_num = number.count("9")
-    if nine_num >= want_length:
-        return "9"*want_length
-
-    last_nine = 0
-    for i in range(k):
-        for c in range(last_nine, len(number)-1):
-            if number[c] == '9':
-                last_nine = c
-                continue
-            if int(number[c]) < int(number[c+1]):
-                number.pop(c)
-                break
+    number_i = list(map(int, number))
+    number_len = len(number_i)
+    # 왕을 뽑습니다.
+    king = 9
+    for i in range(9, -1, -1):
+        if i in number_i:
+            king = i
+            break
+    # 왕을 기준으로 구역을 나누면서 몇 명인지 셉니다.
+    king_num = 0
+    king_index_list = [-1]
+    for i, c in enumerate(number_i):
+        if c == king:
+            king_num += 1
+            king_index_list.append(i)
+    king_index_list.append(number_len)
+    # 왕의 수가 n-k보다 많거나 같으면 "왕" * (n-k) 가 답입니다.
+    remain = number_len - k
+    if king_num >= remain:
+        return str(king)*remain
+    remain -= king_num
+    # 뒤에서부터 채웁니다.
+    for i in range(len(king_index_list)-1, 0, -1):
+        size = king_index_list[i] - king_index_list[i-1] - 1
+        if size < remain:
+            remain -= size
+        # 구역의 크기가 구해져야 하는 수의 갯수보다 많으면 다시 그 구역에서 위의 행위를 반복합니다.
         else:
-            v = number.pop()
+            start = king_index_list[i-1] + 1
+            end = king_index_list[i]
+            front = str(king)*(i-1)
+            middle = solution(number[start: end], size-remain)
+            back = number[king_index_list[i]:]
+            return front + middle + back
 
-    return "".join(number)
+print(solution("0000", 2))
