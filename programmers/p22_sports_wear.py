@@ -29,13 +29,14 @@ def solution(n, lost, reserve):
     # 여벌 가졌는데 도난 당한 사람 = 여벌 없는 도난 안 당한 사람
     lost, reserve = remove_same(set(lost), set(reserve))
 
-    # 왼쪽에서 빌린다.
-    lost_left = set(map(lambda x: x+1, lost))
-    lost_left, reserve = remove_same(lost_left, reserve)
+    # 잃어버린 사람 기준 오른쪽에서 빌린다
+    lost_right = set(map(lambda x: x+1, lost))
+    lost_right, reserve = remove_same(lost_right, reserve)
 
-    # 오른쪽에서 빌린다
-    lost_right = set(map(lambda x: x-2, lost_left))
-    lost_final, _ = remove_same(lost_right, reserve)
+    # 아직도 잃어버린 사람 기준 왼쪽에서 빌린다
+    lost_left = set(map(lambda x: x-2, lost_right))
+    lost_final, _ = remove_same(lost_left, reserve)
 
+    # 아직도 잃어버린 사람을 빼주면 체육복을 가진 사람의 수
     return n-len(lost_final)
 
