@@ -1,52 +1,71 @@
-
 """/*
 print(solution(BBBAAAB))#9
 print(solution(ABABAAAAABA)) #11
 """
 
-import collections
-
-def calcWay(c1, c2, max, func):
+def calcWay(c1, c2, max_v, func):
     way1 = func(c2) - func(c1)
-    way2 = max - func(c2) + func(c1)
-    return (way1, way2)
+    way2 = max_v - func(c2) + func(c1)
+    return way1, way2
 
 
+def left_move(now, move, max_v):
+    next_pos = now - move
+    if next_pos < 0:
+        next_pos += max_v
+    return next_pos
+
+
+def right_move(now, move, max_v):
+    next_pos = now + move
+    if next_pos >= max_v:
+        next_pos -= max_v
+    return next_pos
 
 
 def solution(name):
-    count = 0
-    name = name.lower()
-    diff = collections.deque([0])
-    len_name = len(name)
-    # change character
-    for i, tc in enumerate(name):
-        count += min(*calcWay('a', tc, 26, ord))
-        if tc != 'a' and i != 0:
-            diff.append(i)
+    # 문자를 바꿔야 하는 횟수를 구한다.
+    up_down_count = 0
 
-    # cursor move
-    if len(diff) == 1:
-        return count
-    else:
-        while len(diff) != 0:
-            poped = diff.popleft()
+    target = []
+    for i, c in enumerate(name):
+        if c == 'A':
+            continue
+        up_down_count += min(calcWay('A', c, 26, ord))
+        if i != 0:
+            target.append(i)
 
-            left = diff[-1]
-            right = diff[0]
+    # 이동해야 하는 거리를 구한다
 
-            left_way = min(*calcWay(poped, left, len_name, lambda x: x))
-            if left == right:
-                count += left_way
+    left_right_count = 0
+    start_pos = 0
+    max_l = len(name)
+    di = 'r'
+
+    while len(target) > 0:
+        l_m = 0
+        r_m = 0
+        for i_l in range(0, max_l):
+            if left_move(start_pos, i_l, max_l) in target:
+                l_m = i_l
                 break
-            right_way = min(*calcWay(poped, right, len_name, lambda x: x))
 
-            if left_way < right_way:
-                count += left_way
-                diff.rotate(1)
-            else:
-                count += right_way
+        for i_r in range(0, max_l):
+            if right_move(start_pos, i_r, max_l) in target:
+                r_m = i_r
+                break
 
-    return count
+        if l_m < r_m or ((l_m == r_m) and (di == 'l')):
+            left_right_count += l_m
+            start_pos = left_move(start_pos, l_m, max_l)
+            target.remove(start_pos)
+            di = 'l'
+        elif l_m > r_m or ((l_m == r_m) and (di == 'r')):
+            left_right_count += r_m
+            start_pos = right_move(start_pos, r_m, max_l)
+            target.remove(start_pos)
+            di = 'r'
 
-print(solution("JAN"))
+    return left_right_count + up_down_count
+
+print(solution("BBBAAAB"))
